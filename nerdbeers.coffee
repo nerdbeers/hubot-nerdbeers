@@ -23,8 +23,8 @@ chapters = {
   }
   'pit' : {
     id      : 'pit'
-    name    : 'Pittsburg Nerd Beers'
-    city    : 'Pittsburg'
+    name    : 'Pittsburgh Nerd Beers'
+    city    : 'Pittsburgh'
     state   : 'PA'
     url     : null
     api     : null
