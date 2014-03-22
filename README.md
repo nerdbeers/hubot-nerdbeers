@@ -17,10 +17,10 @@ Use It
 - **hubot okcnerdbeers** - shorthand for hubot nerdbeers okc
 - **hubot okcnerdbeers agenda** - shorthand for hubot nerdbeers agenda okc
 
-Improve It
-===============
-Well, the bar isn't too high here. 
-
 Enjoy It
 ===============
 This is just for fun and community enjoyment.
+
+Improve It
+===============
+Well, the bar isn't too high here. Feel free to help this script suck less by opening issues and sending pull requests.
