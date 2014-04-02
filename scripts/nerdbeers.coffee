@@ -1,15 +1,21 @@
 # Description:
-#   Info about all the nerd beers
+#   Info about all the nerd beers chapters
+#
+# Dependencies:
+#   none
 #
 # Commands:
-#   hubot nerdbeers - the known nerdbeers chapters
+#   hubot nerdbeers - the known nerd beers chapters
 #   hubot nerdbeers <chapter-id> - details of chapter
 #   hubot nerdbeers agenda <chapter-id> - agenda for the chapter
 #   hubot okcnerdbeers - shorthand for hubot nerdbeers okc
 #   hubot okcnerdbeers agenda - shorthand for hubot nerdbeers agenda okc
 #
 # Notes:
+#   Have fun with it.
 #
+# Author:
+#   ryoe
 
 chapters = {
   'okc' : {
