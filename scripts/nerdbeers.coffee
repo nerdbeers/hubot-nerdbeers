@@ -27,15 +27,19 @@ chapters = {
     api     : 'http://agenda.okcnerdbeers.com/api'
     status  : 'active'
   }
-  'pit' : {
-    id      : 'pit'
+  'pgh' : {
+    id      : 'pgh'
     name    : 'Pittsburgh Nerd Beers'
     city    : 'Pittsburgh'
     state   : 'PA'
-    url     : null
+    url     : 'https://plus.google.com/u/0/communities/114514661157596581443'
     api     : null
-    status  : 'pending'
+    status  : 'active'
   }
+}
+
+aliases = {
+  'pit' : 'pgh'
 }
 
 chapterInfo = (chapterId) ->
@@ -46,12 +50,21 @@ chapterDetails = (chapterId, full) ->
   chapter = chapterInfo chapterId
 
   if not chapter?
+    chapterId = aliases[chapterId]
+    chapter = chapterInfo chapterId
+
+  if not chapter?
     deets.push 'No chapter found for chapter id "' + chapterId + '"'
     deets.push 'Try "hubot nerdbeers"'
   else
-    deets.push chapter.name + ' (' + chapter.status + ')'
-    deets.push 'id: ' + chapter.id
+    deets.push chapter.name
     deets.push 'where: ' + chapter.city + ', ' + chapter.state
+
+    id = 'id: ' + chapter.id
+    alias = a for a of aliases when aliases[a].localeCompare(chapter.id) == 0
+    id += ' or ' + alias if alias?
+
+    deets.push id
     if full
       deets.push 'url: ' + chapter.url unless not chapter.url?
       deets.push 'api: ' + chapter.api unless not chapter.api?
@@ -64,7 +77,7 @@ chapterAgenda = (msg, chapterId) ->
 
   if not chapter?
     deets.push 'No chapter found for chapter id "' + chapterId + '"!'
-    deets.push 'Try "hubot nerdbeers"'
+    deets.push 'Try "hubot nerdbeers" for a list of known nerdbeers.'
     return deets.join '\n'  
 
   if not chapter.api?
@@ -91,7 +104,7 @@ apiCall = (msg, url, cb) ->
       if err
         cb err, ['error']
         return
-      
+
       if res.statusCode == 200
         cb null, body
       else
