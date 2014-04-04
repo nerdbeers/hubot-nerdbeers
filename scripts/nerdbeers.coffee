@@ -43,9 +43,11 @@ aliases = {
 }
 
 chapterInfo = (chapterId) ->
-  return chapters[chapterId.toLowerCase()]
+  return chapters[(chapterId + '').toLowerCase()] ? null
 
 chapterDetails = (chapterId, full) ->
+  console.log 'DEETS'
+  origChapterId = chapterId
   deets = []
   chapter = chapterInfo chapterId
 
@@ -54,8 +56,8 @@ chapterDetails = (chapterId, full) ->
     chapter = chapterInfo chapterId
 
   if not chapter?
-    deets.push 'No chapter found for chapter id "' + chapterId + '"'
-    deets.push 'Try "hubot nerdbeers"'
+    deets.push 'No chapter found for chapter id "' + origChapterId + '"!'
+    deets.push 'Try "hubot nerdbeers" for a list of known nerdbeers.'
   else
     deets.push chapter.name
     deets.push 'where: ' + chapter.city + ', ' + chapter.state
@@ -72,32 +74,43 @@ chapterDetails = (chapterId, full) ->
   return deets.join '\n'  
 
 chapterAgenda = (msg, chapterId) ->
+  origChapterId = chapterId
   deets = []
   chapter = chapterInfo chapterId
 
   if not chapter?
-    deets.push 'No chapter found for chapter id "' + chapterId + '"!'
+    chapterId = aliases[chapterId]
+    chapter = chapterInfo chapterId
+
+  if not chapter?
+    deets.push 'No chapter found for chapter id "' + origChapterId + '"!'
     deets.push 'Try "hubot nerdbeers" for a list of known nerdbeers.'
-    return deets.join '\n'  
+    msg.send deets.join '\n'
+    return
 
   if not chapter.api?
-    return chapter.name + ' does not have an API configured!'
+    msg.send chapter.name + ' does not have an API configured!'
+    return
 
   apiCall msg, chapter.api, (err, body) ->
     if err
-      return body
+      msg.send body
+      return
 
     data = JSON.parse(body)
 
     if data?
-      agenda = [chapter.name + ' Agenda']
+      agenda = [chapter.name + ' - ' + data.title ]
       num = 1
-      agenda.push 'Topic ' + (num++).toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data
+      agenda.push 'Topic ' + (num++).toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.topics
+      agenda.push 'When: ' + data.date
+      agenda.push 'Where: ' + data.where.venue + '\nMap: ' + data.where.link
       msg.send agenda.join '\n'
     else
       msg.send body
 
 apiCall = (msg, url, cb) ->
+  console.log 'API'
   msg.http(url)
     .headers(Accept: 'application/json')
     .get() (err, res, body) ->
@@ -112,6 +125,7 @@ apiCall = (msg, url, cb) ->
 
 module.exports = (robot) ->
   robot.respond /\bokcnerdbeers\b/i, (msg) ->
+    console.log 'OKC'
     text = msg.message.text
 
     if text.match(/\bagenda\b/i)
@@ -120,6 +134,7 @@ module.exports = (robot) ->
       msg.send chapterDetails 'okc', true
 
   robot.respond /\bnerdbeers\b/i, (msg) ->
+    console.log 'STD'
     userName = msg.message.user.name
     userMentionName = msg.message.user.mention_name ? 'nerdbeersfriend'
 
