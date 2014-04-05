@@ -46,7 +46,6 @@ chapterInfo = (chapterId) ->
   return chapters[(chapterId + '').toLowerCase()] ? null
 
 chapterDetails = (chapterId, full) ->
-  console.log 'DEETS'
   origChapterId = chapterId
   deets = []
   chapter = chapterInfo chapterId
@@ -101,8 +100,7 @@ chapterAgenda = (msg, chapterId) ->
 
     if data?
       agenda = [chapter.name + ' - ' + data.title ]
-      num = 1
-      agenda.push 'Topic ' + (num++).toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.topics
+      agenda.push 'Topic ' + d.id.toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.topics
       agenda.push 'When: ' + data.date
       agenda.push 'Where: ' + data.where.venue + '\nMap: ' + data.where.link
       msg.send agenda.join '\n'
@@ -110,7 +108,6 @@ chapterAgenda = (msg, chapterId) ->
       msg.send body
 
 apiCall = (msg, url, cb) ->
-  console.log 'API'
   msg.http(url)
     .headers(Accept: 'application/json')
     .get() (err, res, body) ->
@@ -125,7 +122,6 @@ apiCall = (msg, url, cb) ->
 
 module.exports = (robot) ->
   robot.respond /\bokcnerdbeers\b/i, (msg) ->
-    console.log 'OKC'
     text = msg.message.text
 
     if text.match(/\bagenda\b/i)
@@ -134,7 +130,6 @@ module.exports = (robot) ->
       msg.send chapterDetails 'okc', true
 
   robot.respond /\bnerdbeers\b/i, (msg) ->
-    console.log 'STD'
     userName = msg.message.user.name
     userMentionName = msg.message.user.mention_name ? 'nerdbeersfriend'
 
