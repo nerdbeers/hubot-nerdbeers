@@ -34,6 +34,8 @@ chapterDetails = (chapter, full) ->
   return deets.join '\n'
 
 chapterAgenda = (msg, chapterId) ->
+  #we must choose which one we want to use for realz...
+  #url = apiUrl + '/agenda/' + chapterId
   url = apiUrl + '/chapters/' + chapterId + '/agenda'
 
   apiCall msg, url, (err, body) ->
