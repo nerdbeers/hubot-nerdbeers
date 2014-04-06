@@ -17,81 +17,26 @@
 # Author:
 #   ryoe
 
-chapters = {
-  'okc' : {
-    id      : 'okc'
-    name    : 'OKC Nerd Beers'
-    city    : 'Greater Oklahoma City area'
-    state   : 'OK'
-    url     : 'http://agenda.okcnerdbeers.com/'
-    api     : 'http://agenda.okcnerdbeers.com/api'
-    status  : 'active'
-  }
-  'pgh' : {
-    id      : 'pgh'
-    name    : 'Pittsburgh Nerd Beers'
-    city    : 'Pittsburgh'
-    state   : 'PA'
-    url     : 'https://plus.google.com/u/0/communities/114514661157596581443'
-    api     : null
-    status  : 'active'
-  }
-}
+apiUrl = 'http://agenda.okcnerdbeers.com/api'
 
-aliases = {
-  'pit' : 'pgh'
-}
-
-chapterInfo = (chapterId) ->
-  return chapters[(chapterId + '').toLowerCase()] ? null
-
-chapterDetails = (chapterId, full) ->
-  origChapterId = chapterId
+chapterDetails = (chapter, full) ->
   deets = []
-  chapter = chapterInfo chapterId
+  deets.push chapter.name
 
-  if not chapter?
-    chapterId = aliases[chapterId]
-    chapter = chapterInfo chapterId
+  id = 'id: ' + chapter.id
+  id += ' or ' + chapter.alias if chapter.alias.localeCompare(chapter.id) != 0
+  deets.push id
+  deets.push 'where: ' + chapter.where
 
-  if not chapter?
-    deets.push 'No chapter found for chapter id "' + origChapterId + '"!'
-    deets.push 'Try "hubot nerdbeers" for a list of known nerdbeers.'
-  else
-    deets.push chapter.name
-    deets.push 'where: ' + chapter.city + ', ' + chapter.state
+  if full
+    console.log 'add in "full details" as they become available in the API'
 
-    id = 'id: ' + chapter.id
-    alias = a for a of aliases when aliases[a].localeCompare(chapter.id) == 0
-    id += ' or ' + alias if alias?
-
-    deets.push id
-    if full
-      deets.push 'url: ' + chapter.url unless not chapter.url?
-      deets.push 'api: ' + chapter.api unless not chapter.api?
-
-  return deets.join '\n'  
+  return deets.join '\n'
 
 chapterAgenda = (msg, chapterId) ->
-  origChapterId = chapterId
-  deets = []
-  chapter = chapterInfo chapterId
+  url = apiUrl + '/chapters/' + chapterId + '/agenda'
 
-  if not chapter?
-    chapterId = aliases[chapterId]
-    chapter = chapterInfo chapterId
-
-  if not chapter?
-    deets.push 'No chapter found for chapter id "' + origChapterId + '"!'
-    deets.push 'Try "hubot nerdbeers" for a list of known nerdbeers.'
-    msg.send deets.join '\n'
-    return
-
-  if not chapter.api?
-    msg.send chapter.name + ' does not have an API configured!'
-    return
-
-  apiCall msg, chapter.api, (err, body) ->
+  apiCall msg, url, (err, body) ->
     if err
       msg.send body
       return
@@ -99,10 +44,11 @@ chapterAgenda = (msg, chapterId) ->
     data = JSON.parse(body)
 
     if data?
-      agenda = [chapter.name + ' - ' + data.title ]
+      #agenda = [chapter.name + ' - ' + data.title ]
+      agenda = [data.title ]
       agenda.push 'Topic ' + d.id.toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.topics
       agenda.push 'When: ' + data.date
-      agenda.push 'Where: ' + data.where.venue + '\nMap: ' + data.where.link
+      agenda.push 'Where: ' + data.where.venue + '\nMap: ' + data.where.link unless not data.where?
       msg.send agenda.join '\n'
     else
       msg.send body
@@ -120,6 +66,17 @@ apiCall = (msg, url, cb) ->
       else
         cb res.statusCode, body
 
+getChapterInfo = (msg, chapterId, cb) ->
+  apiCall msg, apiUrl + '/chapters/' + chapterId, (err, body) ->
+    if err
+      cb body
+      return
+    cb chapterDetails JSON.parse(body), true
+
+getChapters = (msg, cb) ->
+  apiCall msg, apiUrl + '/chapters', (err, body) ->
+    cb JSON.parse(body)
+
 module.exports = (robot) ->
   robot.respond /\bokcnerdbeers\b/i, (msg) ->
     text = msg.message.text
@@ -127,7 +84,8 @@ module.exports = (robot) ->
     if text.match(/\bagenda\b/i)
       chapterAgenda msg, 'okc'
     else
-      msg.send chapterDetails 'okc', true
+      getChapterInfo msg, 'okc', (body) ->
+        msg.send body
 
   robot.respond /\bnerdbeers\b/i, (msg) ->
     userName = msg.message.user.name
@@ -139,12 +97,15 @@ module.exports = (robot) ->
     cid = matches[5]
 
     if not agendaOrCid? and not cid?
-      list = []
-      list.push chapterDetails c, true for c of chapters
-      msg.send 'Here are the Nerd Beers chapters I know about:\n\n' + list.join '\n\n'
-      return
+      getChapters msg, (body) ->
+        chapters = body
+        list = []
+        list.push chapterDetails c, false for c in chapters
+        msg.send 'Here are the Nerd Beers chapters I know about:\n\n' + list.join '\n\n'
+        return
 
-    if agendaOrCid.match(/\bagenda\b/i)
+    else if agendaOrCid.match(/\bagenda\b/i)
       chapterAgenda msg, cid
     else
-      msg.send chapterDetails agendaOrCid, true
+      getChapterInfo msg, agendaOrCid, (body) ->
+        msg.send body
