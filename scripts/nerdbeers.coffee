@@ -17,7 +17,7 @@
 # Author:
 #   ryoe
 
-apiUrl = 'http://agenda.okcnerdbeers.com/api'
+apiUrl = 'http://nerdbeers.com/api'
 
 chapterDetails = (chapter, full) ->
   deets = []
