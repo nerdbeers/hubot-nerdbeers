@@ -4,6 +4,9 @@ An underwhelming **[Hubot][hubot]** script dedicated to the nerd beers meetups.
 
 [hubot]: https://github.com/github/hubot
 
+## Volatility alert
+The commands supported are subject to change with little warning as we figure out what **hubot-nerdbeers** will become.
+
 ## Install
 
 Install with **npm** using ```--save``` to add to your ```package.json``` dependencies.

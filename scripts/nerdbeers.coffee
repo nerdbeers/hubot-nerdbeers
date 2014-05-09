@@ -50,7 +50,8 @@ chapterAgenda = (msg, chapterId) ->
       agenda = [data.title ]
       agenda.push 'Topic ' + d.id.toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.topics
       agenda.push 'When: ' + data.date
-      agenda.push 'Where: ' + data.where.venue + '\nMap: ' + data.where.link unless not data.where?
+      agenda.push 'Where: ' + data.where.venue if data.where and data.where.venue
+      agenda.push 'Map: ' + data.where.link if data.where and data.where.link
       msg.send agenda.join '\n'
     else
       msg.send body
