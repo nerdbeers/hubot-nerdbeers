@@ -4,9 +4,6 @@ An underwhelming **[Hubot][hubot]** script dedicated to the nerd beers meetups.
 
 [hubot]: https://github.com/github/hubot
 
-## Volatility alert
-The commands supported are subject to change with little warning as we figure out what **hubot-nerdbeers** will become.
-
 ## Install
 
 Install with **npm** using ```--save``` to add to your ```package.json``` dependencies.
@@ -25,11 +22,10 @@ Or if you prefer, just drop **nerdbeers.coffee** in your **[Hubot][hubot] script
 
 ## Use It
 
-- **hubot nerdbeers** - the known nerdbeers chapters
-- **hubot nerdbeers < chapter-id >** - details of chapter
-- **hubot nerdbeers agenda < chapter-id >** - agenda for the chapter
-- **hubot okcnerdbeers** - shorthand for hubot nerdbeers okc
-- **hubot okcnerdbeers agenda** - shorthand for hubot nerdbeers agenda okc
+- **hubot nerdbeers** - get the current OKC NerdBeers agenda
+- **hubot okc nerdbeers** - get the current OKC NerdBeers agenda
+- **hubot okcnerdbeers** - get the current OKC NerdBeers agenda
+- **hubot nerdbeers help** - list the hubot nerdbeers commands
 
 ## Enjoy It
 

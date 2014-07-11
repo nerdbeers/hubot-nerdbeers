@@ -5,11 +5,10 @@
 #   none
 #
 # Commands:
-#   hubot nerdbeers - the known nerd beers chapters
-#   hubot nerdbeers <chapter-id> - details of chapter
-#   hubot nerdbeers agenda <chapter-id> - agenda for the chapter
-#   hubot okcnerdbeers - shorthand for hubot nerdbeers okc
-#   hubot okcnerdbeers agenda - shorthand for hubot nerdbeers agenda okc
+#   hubot nerdbeers - get the current OKC NerdBeers agenda
+#   hubot okc nerdbeers - get the current OKC NerdBeers agenda
+#   hubot okcnerdbeers - get the current OKC NerdBeers agenda
+#   hubot nerdbeers help - list the hubot nerdbeers commands
 #
 # Notes:
 #   Have fun with it.
@@ -17,26 +16,16 @@
 # Author:
 #   ryoe
 
-apiUrl = 'http://nerdbeers.com/api'
-
-chapterDetails = (chapter, full) ->
-  deets = []
-  deets.push chapter.name
-
-  id = 'id: ' + chapter.id
-  id += ' or ' + chapter.alias if chapter.alias.localeCompare(chapter.id) != 0
-  deets.push id
-  deets.push 'where: ' + chapter.where
-
-  if full
-    console.log 'add in "full details" as they become available in the API'
-
-  return deets.join '\n'
+apiUrl = 'http://www.nerdbeers.com/api'
+help = [
+  'hubot nerdbeers - get the current OKC NerdBeers agenda'
+  'hubot okc nerdbeers - get the current OKC NerdBeers agenda'
+  'hubot okcnerdbeers - get the current OKC NerdBeers agenda'
+  'hubot nerdbeers help - list the hubot nerdbeers commands'
+]
 
 chapterAgenda = (msg, chapterId) ->
-  #we must choose which one we want to use for realz...
-  #url = apiUrl + '/agenda/' + chapterId
-  url = apiUrl + '/chapters/' + chapterId + '/agenda'
+  url = apiUrl + '/agenda'
 
   apiCall msg, url, (err, body) ->
     if err
@@ -46,12 +35,11 @@ chapterAgenda = (msg, chapterId) ->
     data = JSON.parse(body)
 
     if data?
-      #agenda = [chapter.name + ' - ' + data.title ]
-      agenda = [data.title ]
-      agenda.push 'Topic ' + d.id.toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.topics
-      agenda.push 'When: ' + data.date
-      agenda.push 'Where: ' + data.where.venue if data.where and data.where.venue
-      agenda.push 'Map: ' + data.where.link if data.where and data.where.link
+      agenda = ['NerdBeers Agenda']
+      agenda.push 'Topic ' + d.id.toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.pairings
+      agenda.push 'When: ' + data.meeting_date
+      agenda.push 'Where: ' + data.venue_name if data.venue_name
+      agenda.push 'Map: ' + data.map_link if data.map_link
       msg.send agenda.join '\n'
     else
       msg.send body
@@ -69,46 +57,10 @@ apiCall = (msg, url, cb) ->
       else
         cb res.statusCode, body
 
-getChapterInfo = (msg, chapterId, cb) ->
-  apiCall msg, apiUrl + '/chapters/' + chapterId, (err, body) ->
-    if err
-      cb body
-      return
-    cb chapterDetails JSON.parse(body), true
-
-getChapters = (msg, cb) ->
-  apiCall msg, apiUrl + '/chapters', (err, body) ->
-    cb JSON.parse(body)
-
 module.exports = (robot) ->
-  robot.respond /\bokcnerdbeers\b/i, (msg) ->
-    text = msg.message.text
-
-    if text.match(/\bagenda\b/i)
+  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?/i, (msg) ->
+    showHelp = msg.match[2] or null
+    if showHelp
+      msg.send help.join '\n'
+    else
       chapterAgenda msg, 'okc'
-    else
-      getChapterInfo msg, 'okc', (body) ->
-        msg.send body
-
-  robot.respond /\bnerdbeers\b/i, (msg) ->
-    userName = msg.message.user.name
-    userMentionName = msg.message.user.mention_name ? 'nerdbeersfriend'
-
-    text = msg.message.text
-    matches = text.match(/(\bnerdbeers\b){1}(\s*)?(\S*)?(\s*)?(.*)?/i)
-    agendaOrCid = matches[3]
-    cid = matches[5]
-
-    if not agendaOrCid? and not cid?
-      getChapters msg, (body) ->
-        chapters = body
-        list = []
-        list.push chapterDetails c, false for c in chapters
-        msg.send 'Here are the Nerd Beers chapters I know about:\n\n' + list.join '\n\n'
-        return
-
-    else if agendaOrCid.match(/\bagenda\b/i)
-      chapterAgenda msg, cid
-    else
-      getChapterInfo msg, agendaOrCid, (body) ->
-        msg.send body
