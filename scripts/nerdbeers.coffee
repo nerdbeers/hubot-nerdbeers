@@ -23,6 +23,8 @@ help = [
   'hubot okcnerdbeers - get the current OKC NerdBeers agenda'
   'hubot nerdbeers help - list the hubot nerdbeers commands'
 ]
+topicEmoji = ''
+beerEmoji  = ' (beer) '
 
 chapterAgenda = (msg, chapterId) ->
   url = apiUrl + '/agenda'
@@ -35,11 +37,11 @@ chapterAgenda = (msg, chapterId) ->
     data = JSON.parse(body)
 
     if data?
-      agenda = ['NerdBeers Agenda']
-      agenda.push 'Topic ' + d.id.toString() + ': ' + d.topic + ' - ' + '(beer) ' + d.beer for d in data.pairings
-      agenda.push 'When: ' + data.meeting_date
-      agenda.push 'Where: ' + data.venue_name if data.venue_name
-      agenda.push 'Map: ' + data.map_link if data.map_link
+      agenda = ["NerdBeers Agenda"]
+      agenda.push "Topic #{topicEmoji}#{d.id}: #{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
+      agenda.push "When: #{data.meeting_date}"
+      agenda.push "Where: #{data.venue_name}" if data.venue_name
+      agenda.push "Map: #{data.map_link}" if data.map_link
       msg.send agenda.join '\n'
     else
       msg.send body
@@ -58,6 +60,9 @@ apiCall = (msg, url, cb) ->
         cb res.statusCode, body
 
 module.exports = (robot) ->
+  if process.env.HUBOT_SLACK_TOKEN
+    topicEmoji = ' :wrench: '
+    beerEmoji  = ' :beer: '
   robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?/i, (msg) ->
     showHelp = msg.match[2] or null
     if showHelp
