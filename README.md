@@ -1,6 +1,6 @@
 # hubot-nerdbeers
 
-An underwhelming **[Hubot][hubot]** script dedicated to the nerd beers meetups.
+The "official", albeit underwhelming, **[Hubot][hubot]** script dedicated to the nerd beers meetups.
 
 [hubot]: https://github.com/github/hubot
 
