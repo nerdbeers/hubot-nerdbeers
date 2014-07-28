@@ -23,7 +23,7 @@ help = [
   'hubot okcnerdbeers - get the current OKC NerdBeers agenda'
   'hubot nerdbeers help - list the hubot nerdbeers commands'
 ]
-topicEmoji = ''
+topicEmoji = '' #no good HipChat emoji for this...
 beerEmoji  = ' (beer) '
 
 chapterAgenda = (msg, chapterId) ->
@@ -38,7 +38,7 @@ chapterAgenda = (msg, chapterId) ->
 
     if data?
       agenda = ["NerdBeers Agenda"]
-      agenda.push "Topic #{topicEmoji}#{d.id}: #{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
+      agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
       agenda.push "When: #{data.meeting_date}"
       agenda.push "Where: #{data.venue_name}" if data.venue_name
       agenda.push "Map: #{data.map_link}" if data.map_link
@@ -61,7 +61,7 @@ apiCall = (msg, url, cb) ->
 
 module.exports = (robot) ->
   if process.env.HUBOT_SLACK_TOKEN
-    topicEmoji = ' :wrench: '
+    topicEmoji = ':wrench: '
     beerEmoji  = ' :beer: '
   robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?/i, (msg) ->
     showHelp = msg.match[2] or null
