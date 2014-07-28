@@ -2,7 +2,7 @@
 #   Info about all the nerd beers chapters
 #
 # Dependencies:
-#   none
+#   "moment": "^2.6.0"
 #
 # Commands:
 #   hubot nerdbeers - get the current OKC NerdBeers agenda
@@ -15,6 +15,7 @@
 #
 # Author:
 #   ryoe
+moment = require 'moment'
 
 apiUrl = 'http://www.nerdbeers.com/api'
 help = [
@@ -37,9 +38,10 @@ chapterAgenda = (msg, chapterId) ->
     data = JSON.parse(body)
 
     if data?
+      date = moment data.meeting_date
       agenda = ["NerdBeers Agenda"]
       agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
-      agenda.push "When: #{data.meeting_date}"
+      agenda.push "When: " + date.format 'MMM DD, YYYY'
       agenda.push "Where: #{data.venue_name}" if data.venue_name
       agenda.push "Map: #{data.map_link}" if data.map_link
       msg.send agenda.join '\n'

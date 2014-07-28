@@ -1,6 +1,6 @@
 {
   "name": "hubot-nerdbeers",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An underwhelming Hubot script dedicated to the nerd beers meetups",
   "main": "index.coffee",
   "scripts": {
@@ -18,5 +18,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ryoe/hubot-nerdbeers/issues"
+  },
+  "dependencies": {
+    "moment": "^2.7.0"
   }
 }
