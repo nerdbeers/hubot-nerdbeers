@@ -1,14 +1,14 @@
 {
   "name": "hubot-nerdbeers",
-  "version": "1.0.3",
-  "description": "An underwhelming Hubot script dedicated to the nerd beers meetups",
+  "version": "1.0.4",
+  "description": "The \"official\", albeit underwhelming, Hubot script dedicated to the nerd beers meetups",
   "main": "index.coffee",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ryoe/hubot-nerdbeers.git"
+    "url": "https://github.com/nerdbeers/hubot-nerdbeers.git"
   },
   "keywords": [
     "nerdbeers",
@@ -17,7 +17,7 @@
   "author": "Rick Yoesting",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ryoe/hubot-nerdbeers/issues"
+    "url": "https://github.com/nerdbeers/hubot-nerdbeers/issues"
   },
   "dependencies": {
     "moment": "^2.7.0"
