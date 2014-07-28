@@ -38,10 +38,10 @@ chapterAgenda = (msg, chapterId) ->
     data = JSON.parse(body)
 
     if data?
-      date = moment data.meeting_date
+      date = moment.utc data.meeting_date 
       agenda = ["NerdBeers Agenda"]
       agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
-      agenda.push "When: " + date.format 'MMM DD, YYYY'
+      agenda.push "When: " + date.format 'MMM DD, YYYY hh:mma'
       agenda.push "Where: #{data.venue_name}" if data.venue_name
       agenda.push "Map: #{data.map_link}" if data.map_link
       msg.send agenda.join '\n'
