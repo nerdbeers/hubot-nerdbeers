@@ -23,10 +23,23 @@ help = [
   'hubot nerdbeers - get the current OKC NerdBeers agenda'
   'hubot okc nerdbeers - get the current OKC NerdBeers agenda'
   'hubot okcnerdbeers - get the current OKC NerdBeers agenda'
+  'hubot nerdbeers humans - get the NerdBeers humans.txt'
   'hubot nerdbeers help - list the hubot nerdbeers commands'
 ]
 topicEmoji = '' #no good HipChat emoji for this...
 beerEmoji  = ' (beer) '
+
+showHumans = (msg) ->
+  msg.http("#{baseUrl}humans.txt")
+    .get() (err, res, body) ->
+      if err
+        msg.send "#{err}"
+        return
+
+      if res.statusCode == 200
+        msg.send body
+      else
+        msg.send "statusCode: #{err}\n#{body}"
 
 chapterAgenda = (msg, chapterId) ->
   url = apiUrl + '/agenda'
@@ -83,9 +96,12 @@ module.exports = (robot) ->
   if process.env.HUBOT_SLACK_TOKEN
     topicEmoji = ':wrench: '
     beerEmoji  = ' :beer: '
-  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?/i, (msg) ->
-    showHelp = msg.match[2] or null
-    if showHelp
+  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?/i, (msg) ->
+    cmdHelp = msg.match[2] or null
+    cmdHumans = msg.match[3] or null
+    if cmdHelp
       msg.send help.join '\n'
+    if cmdHumans
+      showHumans msg
     else
       chapterAgenda msg, 'okc'
