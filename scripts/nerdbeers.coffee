@@ -81,7 +81,7 @@ formatSlack = (data, date) ->
   agenda = ["*NerdBeers Agenda*"]
   agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
   agenda.push "*When:* " + date.format 'MMM DD, YYYY hh:mma'
-  agenda.push "*Where:* #{data.venue_name} (#{data.map_link}| Map)" if data.venue_name
+  agenda.push "*Where:* #{data.venue_name} ( #{data.map_link}|Map )" if data.venue_name
   agenda
 
 formatHipChat = (data, date) ->
@@ -115,9 +115,9 @@ module.exports = (robot) ->
     cmdSuggestions = msg.match[4] or null
     if cmdHelp
       msg.send help.join '\n'
-    if cmdHumans
+    else if cmdHumans
       showHumans msg
-    if cmdSuggestions
+    else if cmdSuggestions
       showSuggestions msg
     else
       chapterAgenda msg, 'okc'
