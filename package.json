@@ -1,6 +1,6 @@
 {
   "name": "hubot-nerdbeers",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "The \"official\", albeit underwhelming, Hubot script dedicated to the nerd beers meetups",
   "main": "index.coffee",
   "scripts": {

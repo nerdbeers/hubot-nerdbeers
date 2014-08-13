@@ -9,6 +9,7 @@
 #   hubot okc nerdbeers - get the current OKC NerdBeers agenda
 #   hubot okcnerdbeers - get the current OKC NerdBeers agenda
 #   hubot nerdbeers humans - get the NerdBeers humans.txt
+#   hubot nerdbeers suggestions - get the recent NerdBeers suggestions
 #   hubot nerdbeers help - list the hubot nerdbeers commands
 #
 # Notes:
