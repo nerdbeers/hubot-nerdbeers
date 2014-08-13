@@ -8,6 +8,7 @@
 #   hubot nerdbeers - get the current OKC NerdBeers agenda
 #   hubot okc nerdbeers - get the current OKC NerdBeers agenda
 #   hubot okcnerdbeers - get the current OKC NerdBeers agenda
+#   hubot nerdbeers humans - get the NerdBeers humans.txt
 #   hubot nerdbeers help - list the hubot nerdbeers commands
 #
 # Notes:
@@ -24,10 +25,21 @@ help = [
   'hubot okc nerdbeers - get the current OKC NerdBeers agenda'
   'hubot okcnerdbeers - get the current OKC NerdBeers agenda'
   'hubot nerdbeers humans - get the NerdBeers humans.txt'
+  'hubot nerdbeers suggestions - get the recent NerdBeers suggestions'
   'hubot nerdbeers help - list the hubot nerdbeers commands'
 ]
 topicEmoji = '' #no good HipChat emoji for this...
 beerEmoji  = ' (beer) '
+
+showSuggestions = (msg) ->
+  cmd = adapterFormat "hubot nerdbeers suggestions"
+  msg.send "#{cmd} is coming soon!\nUntil then, visit #{baseUrl}suggestions"
+
+adapterFormat = (text) ->
+  if process.env.HUBOT_SLACK_TOKEN
+    "*#{text}*"
+  else
+    text
 
 showHumans = (msg) ->
   msg.http("#{baseUrl}humans.txt")
@@ -96,12 +108,15 @@ module.exports = (robot) ->
   if process.env.HUBOT_SLACK_TOKEN
     topicEmoji = ':wrench: '
     beerEmoji  = ' :beer: '
-  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?/i, (msg) ->
+  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?( suggestion)?/i, (msg) ->
     cmdHelp = msg.match[2] or null
     cmdHumans = msg.match[3] or null
+    cmdSuggestions = msg.match[4] or null
     if cmdHelp
       msg.send help.join '\n'
     if cmdHumans
       showHumans msg
+    if cmdSuggestions
+      showSuggestions msg
     else
       chapterAgenda msg, 'okc'
