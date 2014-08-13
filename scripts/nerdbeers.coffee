@@ -32,6 +32,7 @@ chapterAgenda = (msg, chapterId) ->
   url = apiUrl + '/agenda'
 
   apiCall msg, url, (err, body) ->
+    #console.log msg
     if err
       msg.send body
       return
@@ -40,15 +41,30 @@ chapterAgenda = (msg, chapterId) ->
 
     if data?
       date = moment.utc data.meeting_date 
-      agenda = ["*NerdBeers Agenda*"]
-      agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
-      agenda.push "*When:* " + date.format 'MMM DD, YYYY hh:mma'
-      agenda.push "*Where:* #{data.venue_name} (#{data.map_link}|Map)" if data.venue_name
-      #agenda.push "*Map:* #{data.map_link}|Map #{data.venue_name}" if data.map_link
-      msg.message_format = 'html'
-      msg.send agenda.join '\n'
+      if process.env.HUBOT_SLACK_TOKEN
+        agenda = formatSlack data, date
+        msg.message_format = 'html'
+        msg.send agenda.join '\n'
+      else
+        agenda = formatHipChat data, date
+        msg.send agenda.join '\n'
     else
       msg.send body
+
+formatSlack = (data, date) ->
+  agenda = ["*NerdBeers Agenda*"]
+  agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
+  agenda.push "*When:* " + date.format 'MMM DD, YYYY hh:mma'
+  agenda.push "*Where:* #{data.venue_name} (#{data.map_link}| Map)" if data.venue_name
+  agenda
+
+formatHipChat = (data, date) ->
+  agenda = ["NerdBeers Agenda"]
+  agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
+  agenda.push "When: " + date.format 'MMM DD, YYYY hh:mma'
+  agenda.push "Where: #{data.venue_name}" if data.venue_name
+  agenda.push "More Info: #{baseUrl}" if data.venue_name
+  agenda
 
 apiCall = (msg, url, cb) ->
   msg.http(url)
