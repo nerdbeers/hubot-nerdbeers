@@ -33,8 +33,31 @@ topicEmoji = '' #no good HipChat emoji for this...
 beerEmoji  = ' (beer) '
 
 showSuggestions = (msg) ->
-  cmd = adapterFormat "hubot nerdbeers suggestions"
-  msg.send "#{cmd} is coming soon!\nUntil then, visit #{baseUrl}suggestions"
+  moreSuggestions = "\nFor more suggestions, visit #{baseUrl}suggestions"
+  url = apiUrl + '/suggestions'
+
+  apiCall msg, url, (err, body) ->
+    if err
+      msg.send body
+      return
+
+    suggestions = JSON.parse(body)
+
+    if suggestions?
+      data = {}
+      data.pairings = suggestions
+      date = null
+      if process.env.HUBOT_SLACK_TOKEN
+        agenda = formatSlack data, date, 'NerdBeers Recent Suggestions'
+        agenda.push moreSuggestions
+        msg.message_format = 'html'
+        msg.send agenda.join '\n'
+      else
+        agenda = formatHipChat data, date, 'NerdBeers Recent Suggestions'
+        agenda.push moreSuggestions
+        msg.send agenda.join '\n'
+    else
+      msg.send body
 
 adapterFormat = (text) ->
   if process.env.HUBOT_SLACK_TOKEN
@@ -58,7 +81,6 @@ chapterAgenda = (msg, chapterId) ->
   url = apiUrl + '/agenda'
 
   apiCall msg, url, (err, body) ->
-    #console.log msg
     if err
       msg.send body
       return
@@ -68,26 +90,26 @@ chapterAgenda = (msg, chapterId) ->
     if data?
       date = moment.utc data.meeting_date 
       if process.env.HUBOT_SLACK_TOKEN
-        agenda = formatSlack data, date
+        agenda = formatSlack data, date, "NerdBeers Agenda"
         msg.message_format = 'html'
         msg.send agenda.join '\n'
       else
-        agenda = formatHipChat data, date
+        agenda = formatHipChat data, date, "NerdBeers Agenda"
         msg.send agenda.join '\n'
     else
       msg.send body
 
-formatSlack = (data, date) ->
-  agenda = ["*NerdBeers Agenda*"]
+formatSlack = (data, date, title) ->
+  agenda = ["*#{title}*"]
   agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
-  agenda.push "*When:* " + date.format 'MMM DD, YYYY hh:mma'
+  agenda.push "*When:* " + date.format 'MMM DD, YYYY hh:mma' if date
   agenda.push "*Where:* #{data.venue_name} ( #{data.map_link}|Map )" if data.venue_name
   agenda
 
-formatHipChat = (data, date) ->
-  agenda = ["NerdBeers Agenda"]
+formatHipChat = (data, date, title) ->
+  agenda = ["#{title}"]
   agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
-  agenda.push "When: " + date.format 'MMM DD, YYYY hh:mma'
+  agenda.push "When: " + date.format 'MMM DD, YYYY hh:mma' if date
   agenda.push "Where: #{data.venue_name}" if data.venue_name
   agenda.push "More Info: #{baseUrl}" if data.venue_name
   agenda
