@@ -99,6 +99,31 @@ chapterAgenda = (msg, chapterId) ->
     else
       msg.send body
 
+cowsayAgenda = (msg, chapterId) ->
+  url = apiUrl + '/agenda'
+
+  apiCall msg, url, (err, body) ->
+    if err
+      msg.send body
+      return
+
+    data = JSON.parse(body)
+
+    if data?
+      date = moment.utc data.meeting_date 
+      agenda = formatHipChat data, date, "NerdBeers Agenda"
+      message = encodeURIComponent agenda.join '\r\n' 
+      format = 'text'
+      url = "http://cowsay.morecode.org/say?message=#{message}&format=#{format}"
+
+      apiCall msg, url, (err, textBody) ->
+        if err
+          msg.send textBody
+          return
+        msg.send textBody
+    else
+      msg.send body
+
 formatSlack = (data, date, title) ->
   agenda = ["*#{title}*"]
   agenda.push "#{topicEmoji}#{d.topic} - #{beerEmoji} #{d.beer}" for d in data.pairings
@@ -127,19 +152,38 @@ apiCall = (msg, url, cb) ->
       else
         cb res.statusCode, body
 
+apiPostCall = (msg, url, postBody, cb) ->
+  console.log postBody
+  postData = JSON.stringify(postBody)
+  console.log postData
+  msg.http(url)
+    .headers(Accept: 'application/json')
+    .header('Content-Type','application/json')
+    .post(postData) (err, res, body) ->
+      if err
+        console.log 'error'
+        console.log err
+        cb err, res.statusCode, ['error']
+        return
+      
+      cb null, res.statusCode, body
+
 module.exports = (robot) ->
   if process.env.HUBOT_SLACK_TOKEN
     topicEmoji = ':wrench: '
     beerEmoji  = ' :beer: '
-  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?( suggestion)?/i, (msg) ->
+  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?( suggestion)?( agenda cowsay)?( cowsay)?/i, (msg) ->
     cmdHelp = msg.match[2] or null
     cmdHumans = msg.match[3] or null
     cmdSuggestions = msg.match[4] or null
+    cmdCowsay = msg.match[5] or msg.match[6] or null
     if cmdHelp
       msg.send help.join '\n'
     else if cmdHumans
       showHumans msg
     else if cmdSuggestions
       showSuggestions msg
+    else if cmdCowsay
+      cowsayAgenda msg
     else
       chapterAgenda msg, 'okc'
