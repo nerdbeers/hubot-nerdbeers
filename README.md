@@ -25,6 +25,11 @@ Or if you prefer, just drop **nerdbeers.coffee** in your **[Hubot][hubot] script
 - **hubot nerdbeers** - get the current OKC NerdBeers agenda
 - **hubot okc nerdbeers** - get the current OKC NerdBeers agenda
 - **hubot okcnerdbeers** - get the current OKC NerdBeers agenda
+- **hubot nerdbeers cowsay** - get the current OKC NerdBeers agenda cowsay-style
+- **hubot nerdbeers humans** - get the NerdBeers humans.txt
+- **hubot nerdbeers suggestions** - get the recent NerdBeers suggestions
+- **hubot nerdbeers suggest beer &lt;beer&gt;** - add a beer to the NerdBeers suggestions
+- **hubot nerdbeers suggest topic &lt;topic&gt;** - add a topic to the NerdBeers suggestions
 - **hubot nerdbeers help** - list the hubot nerdbeers commands
 
 ## Enjoy It
