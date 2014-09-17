@@ -8,8 +8,11 @@
 #   hubot nerdbeers - get the current OKC NerdBeers agenda
 #   hubot okc nerdbeers - get the current OKC NerdBeers agenda
 #   hubot okcnerdbeers - get the current OKC NerdBeers agenda
+#   hubot nerdbeers cowsay - get the current OKC NerdBeers agenda cowsay-style
 #   hubot nerdbeers humans - get the NerdBeers humans.txt
 #   hubot nerdbeers suggestions - get the recent NerdBeers suggestions
+#   hubot nerdbeers suggest beer <beer> - add a beer to the NerdBeers suggestions
+#   hubot nerdbeers suggest topic <topic> - add a topic to the NerdBeers suggestions
 #   hubot nerdbeers help - list the hubot nerdbeers commands
 #
 # Notes:
@@ -25,12 +28,39 @@ help = [
   'hubot nerdbeers - get the current OKC NerdBeers agenda'
   'hubot okc nerdbeers - get the current OKC NerdBeers agenda'
   'hubot okcnerdbeers - get the current OKC NerdBeers agenda'
+  'hubot nerdbeers cowsay - get the current OKC NerdBeers agenda cowsay-style'
   'hubot nerdbeers humans - get the NerdBeers humans.txt'
   'hubot nerdbeers suggestions - get the recent NerdBeers suggestions'
+  'hubot nerdbeers suggest beer <beer> - add a beer to the NerdBeers suggestions'
+  'hubot nerdbeers suggest topic <topic> - add a topic to the NerdBeers suggestions'
   'hubot nerdbeers help - list the hubot nerdbeers commands'
 ]
+f5_suggestions = [
+  'Have you considered Coop F5?'
+  'May I suggest Coop F5?'
+  'Many nerds like a tasty IPA like COOP F5.'
+]
+reF5 = new RegExp('F5','i')
 topicEmoji = '' #no good HipChat emoji for this...
 beerEmoji  = ' (beer) '
+
+postSuggestion = (msg, beer, topic, cb) ->
+  #apiUrl = 'http://localhost:3000/api'
+  url = "#{apiUrl}/suggestions/new"
+  beerParam = if beer then encodeURIComponent(beer) else ''
+  topicParam = if topic then encodeURIComponent(topic) else ''
+  params = "suggestion%5Btopic%5D=#{topicParam}&suggestion%5Bbeer%5D=#{beerParam}"
+
+  msg.http("#{url}?#{params}")
+    .post() (err, res, body) ->
+      if err
+        msg.send "#{err}"
+        return
+
+      if res.statusCode == 201
+        cb()
+      else
+        msg.send "statusCode: #{res.statusCode}\n#{body}"
 
 showSuggestions = (msg) ->
   moreSuggestions = "\nFor more suggestions, visit #{baseUrl}suggestions"
@@ -172,15 +202,35 @@ module.exports = (robot) ->
   if process.env.HUBOT_SLACK_TOKEN
     topicEmoji = ':wrench: '
     beerEmoji  = ' :beer: '
-  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?( suggestion)?( agenda cowsay)?( cowsay)?/i, (msg) ->
+  robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?( agenda cowsay)?( cowsay)?( suggest|suggestion)?( beer)?( topic)?( .*)?/i, (msg) ->
     cmdHelp = msg.match[2] or null
     cmdHumans = msg.match[3] or null
-    cmdSuggestions = msg.match[4] or null
-    cmdCowsay = msg.match[5] or msg.match[6] or null
+    cmdCowsay = msg.match[4] or msg.match[5] or null
+    cmdSuggestions = msg.match[6] or null
+    cmdBeer = msg.match[7] or null
+    cmdTopic = msg.match[8] or null
+    suggestion = msg.match[9] or null
+    console.log msg.match
     if cmdHelp
       msg.send help.join '\n'
     else if cmdHumans
       showHumans msg
+    else if cmdSuggestions and cmdBeer
+      msg.reply "Please try again and include a beer!" if not suggestion
+      msg.emote msg.random f5_suggestions if not suggestion
+
+      if suggestion
+        postSuggestion msg, suggestion, null, () ->
+          msg.reply "Thanks for your beer suggestion#{suggestion}!" if suggestion
+          msg.emote msg.random f5_suggestions if suggestion and not reF5.test(suggestion)
+
+    else if cmdSuggestions and cmdTopic
+      msg.reply "Please try again and include a topic!" if not suggestion
+
+      if suggestion
+        postSuggestion msg, null, suggestion, () ->
+          msg.reply "Thanks for suggesting topic#{suggestion}!" if suggestion
+
     else if cmdSuggestions
       showSuggestions msg
     else if cmdCowsay
