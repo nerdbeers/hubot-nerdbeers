@@ -14,7 +14,7 @@
 #   hubot nerdbeers suggest beer <beer> - add a beer to the NerdBeers suggestions
 #   hubot nerdbeers suggest topic <topic> - add a topic to the NerdBeers suggestions
 #   hubot nerdbeers help - list the hubot nerdbeers commands
-#
+#   Agenda has been updated - respond with most recent agenda
 # Notes:
 #   Have fun with it.
 #
@@ -202,6 +202,9 @@ module.exports = (robot) ->
   if process.env.HUBOT_SLACK_TOKEN
     topicEmoji = ':wrench: '
     beerEmoji  = ' :beer: '
+  robot.hear /Agenda has been updated/i, (msg) ->
+    chapterAgenda msg, 'okc'
+
   robot.respond /(nerdbeers|okcnerdbeers|okc nerdbeers){1}( help)?( humans)?( agenda cowsay)?( cowsay)?( suggest|suggestion)?( beer)?( topic)?( .*)?/i, (msg) ->
     cmdHelp = msg.match[2] or null
     cmdHumans = msg.match[3] or null
