@@ -44,6 +44,7 @@ f5_suggestions = [
 reF5 = new RegExp('F5','i')
 topicEmoji = '' #no good HipChat emoji for this...
 beerEmoji  = ' (beer) '
+moreSuggestions = "\nFor more suggestions, visit #{baseUrl}suggestions"
 
 postSuggestion = (msg, beer, topic, cb) ->
   #apiUrl = 'http://localhost:3000/api'
@@ -64,7 +65,6 @@ postSuggestion = (msg, beer, topic, cb) ->
         msg.send "statusCode: #{res.statusCode}\n#{body}"
 
 showSuggestions = (msg) ->
-  moreSuggestions = "\nFor more suggestions, visit #{baseUrl}suggestions"
   url = apiUrl + '/suggestions'
 
   apiCall msg, url, (err, body) ->
@@ -269,6 +269,47 @@ module.exports = (robot) ->
               dataMsg += agenda.join '\n'
             else
               agenda = formatHipChat data, date, "NerdBeers Agenda"
+              dataMsg = agenda.join '\n'
+          else
+            dataMsg = body
+        else
+          dataMsg = "#{res.statusCode}\n#{body}"
+
+        #send the message for all to see!
+        #console.log dataMsg
+        robot.messageRoom "##{room}", "#{dataMsg}"
+
+  robot.router.get '/hubot/suggestionsupdate', (req, res) ->
+    defaultRoom = 'general'
+    q    = qs.parse req._parsedUrl.query
+    room = q.room or process.env.HUBOT_NERDBEERS_NOTIFY_ROOM or defaultRoom or null
+    roomWarn = if (process.env.HUBOT_NERDBEERS_NOTIFY_ROOM || null)? then '' else '\n* HUBOT_NERDBEERS_NOTIFY_ROOM environment variable not set'
+
+    res.end "GET suggestionsupdate:* room: #{room}#{roomWarn}"
+
+    url = apiUrl + '/suggestions'
+    robot.http(url)
+      .headers(Accept: 'application/json')
+      .get() (err, res, body) ->
+        if err
+          cb err, ['error']
+          return
+
+        if res.statusCode == 200
+          suggestions = JSON.parse(body)
+
+          if suggestions?
+            data = {}
+            data.pairings = suggestions
+            date = null
+            if process.env.HUBOT_SLACK_TOKEN
+              agenda = formatSlack data, date, 'NerdBeers Recent Suggestions'
+              agenda.push moreSuggestions
+              dataMsg = ":boom:\n*Suggestions have been updated!*\n\n"
+              dataMsg += agenda.join '\n'
+            else
+              agenda = formatHipChat data, date, 'NerdBeers Recent Suggestions'
+              agenda.push moreSuggestions
               dataMsg = agenda.join '\n'
           else
             dataMsg = body
