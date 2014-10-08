@@ -21,6 +21,7 @@
 # Author:
 #   ryoe
 moment = require 'moment'
+qs = require 'querystring'
 
 baseUrl = 'http://www.nerdbeers.com/'
 apiUrl  = 'http://www.nerdbeers.com/api'
@@ -240,3 +241,45 @@ module.exports = (robot) ->
       cowsayAgenda msg
     else
       chapterAgenda msg, 'okc'
+
+  robot.router.get '/hubot/agendaupdate', (req, res) ->
+    defaultRoom = 'general'
+    q    = qs.parse req._parsedUrl.query
+    room = q.room or process.env.HUBOT_NERDBEERS_NOTIFY_ROOM or defaultRoom or null
+    roomWarn = if (process.env.HUBOT_NERDBEERS_NOTIFY_ROOM || null)? then '' else '\n* HUBOT_NERDBEERS_NOTIFY_ROOM environment variable not set'
+
+    res.end "GET agendaupdate:* room: #{room}#{roomWarn}"
+
+    url = apiUrl + '/agenda'
+    robot.http(url)
+      .headers(Accept: 'application/json')
+      .get() (err, res, body) ->
+        if err
+          cb err, ['error']
+          return
+
+        if res.statusCode == 200
+          data = JSON.parse(body)
+
+          if data?
+            date = moment.utc data.meeting_date 
+            if process.env.HUBOT_SLACK_TOKEN
+              agenda = formatSlack data, date, "NerdBeers Agenda"
+              dataMsg = ":boom:\n*Agenda been updated!*\n\n"
+              dataMsg += agenda.join '\n'
+            else
+              agenda = formatHipChat data, date, "NerdBeers Agenda"
+              dataMsg = agenda.join '\n'
+          else
+            dataMsg = body
+        else
+          dataMsg = "#{res.statusCode}\n#{body}"
+
+        #send the message for all to see!
+        #console.log dataMsg
+        robot.messageRoom "##{room}", "#{dataMsg}"
+
+
+
+
+
