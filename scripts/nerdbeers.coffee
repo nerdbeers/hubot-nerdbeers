@@ -265,7 +265,7 @@ module.exports = (robot) ->
             date = moment.utc data.meeting_date 
             if process.env.HUBOT_SLACK_TOKEN
               agenda = formatSlack data, date, "NerdBeers Agenda"
-              dataMsg = ":boom:\n*Agenda been updated!*\n\n"
+              dataMsg = ":boom:\n*Agenda has been updated!*\n\n"
               dataMsg += agenda.join '\n'
             else
               agenda = formatHipChat data, date, "NerdBeers Agenda"
