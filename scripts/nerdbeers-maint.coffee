@@ -61,7 +61,7 @@ postToNerdbeers = (msg, action) ->
     return
 
   url = "#{nbApiUrl}robots/#{action}"
-  auth = "Token #{nbApiToken}"
+  auth = "Token token=#{nbApiToken}"
   msg.http("#{url}")
     .headers(Authorization: auth)
     .post() (err, res, body) ->
