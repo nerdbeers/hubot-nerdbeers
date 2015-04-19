@@ -8,6 +8,11 @@
 #   hubot vacuum - vacuum the NerdBeers db
 #   hubot clear logs - clear the NerdBeers visitor log
 #   hubot maint help - list the hubot maint commands
+#   hubot nb team - list the team members who can perform maintenance tasks
+#
+# Configuration:
+#   NB_API_TOKEN: required
+#   NB_SLACK_API_TOKEN: required
 #
 # Notes:
 #   Have fun with it.
