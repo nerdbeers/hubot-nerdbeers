@@ -45,7 +45,7 @@ postToNerdbeers = (msg, action) ->
   userName = msg.message.user.mention_name || msg.message.user.name
   allowed = (name for name in allowedUsers when userName.toUpperCase() == name.toUpperCase())
 
-  unless allowed.length == 1
+  unless allowed.length == 1 || userName == "Shell"
     msg.send "Sorry, @#{userName}. But you're not allowed to do that!"
     return
 
@@ -62,6 +62,7 @@ postToNerdbeers = (msg, action) ->
 
   url = "#{nbApiUrl}robots/#{action}"
   auth = "Token token=#{nbApiToken}"
+  console.log auth
   msg.http("#{url}")
     .headers(Authorization: auth)
     .post() (err, res, body) ->
@@ -136,10 +137,10 @@ module.exports = (robot) ->
     listTeam msg
 
   robot.respond /(nb |nerdbeers )?maint(enance)? help( .*)?/i, (msg) ->
-      msg.send help.join '\n'
+    msg.send help.join '\n'
 
   robot.respond /(nb |nerdbeers )?(clear|clean|empty)( )?(logs|metrics)( .*)?/i, (msg) ->
-      cleanLogs msg
+    cleanLogs msg
 
   robot.respond /(nb |nerdbeers )?(db )?(vacuum|vaccum)( db)?( .*)?/i, (msg) ->
-      vacuumDb msg
+    vacuumDb msg
