@@ -23,6 +23,7 @@ rolloutUrls = [
   'https://pbs.twimg.com/tweet_video/CLA29NBWgAEWbB5.mp4'
   'https://i.imgur.com/f5u2RL5.gifv'
   'http://cdn.gifbay.com/2013/01/football_spike_fail-23002.gif'
+  'https://s-media-cache-ak0.pinimg.com/originals/63/bd/75/63bd75afd2c7c17748e4766b541bf9ad.jpg'
 ]
 
 rolloutGreetings =[
