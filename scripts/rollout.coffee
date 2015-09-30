@@ -13,7 +13,6 @@
 rolloutUrls = [
   'https://www.youtube.com/watch?v=epSrFV2Wtjs#t=48'
   'http://c5.nrostatic.com/sites/default/files/uploaded/Train%20Wreck%20One.gif'
-  'http://smallbusiness.com/uploads/2013/10/warehouse-o.gif'
   'http://media.giphy.com/media/mTXSKTk3BsT6w/giphy.gif'
   'http://i.kinja-img.com/gawker-media/image/upload/s--GMvrPnEt--/c_fit,fl_progressive,q_80,w_636/ltppilanfm7rz7rxaupn.gif'
   'http://i.imgur.com/dioqtic.gif'
@@ -24,6 +23,7 @@ rolloutUrls = [
   'https://i.imgur.com/f5u2RL5.gifv'
   'http://cdn.gifbay.com/2013/01/football_spike_fail-23002.gif'
   'https://s-media-cache-ak0.pinimg.com/originals/63/bd/75/63bd75afd2c7c17748e4766b541bf9ad.jpg'
+  'http://i.imgur.com/ZMOhZEF.gifv'
 ]
 
 rolloutGreetings =[
