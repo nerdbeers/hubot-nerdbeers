@@ -24,6 +24,7 @@ rolloutUrls = [
   'http://cdn.gifbay.com/2013/01/football_spike_fail-23002.gif'
   'https://s-media-cache-ak0.pinimg.com/originals/63/bd/75/63bd75afd2c7c17748e4766b541bf9ad.jpg'
   'http://i.imgur.com/ZMOhZEF.gifv'
+  'http://www.gifbin.com/bin/042013/1366655190_slipping_carpet_dancing_fail.gif'
 ]
 
 rolloutGreetings =[
