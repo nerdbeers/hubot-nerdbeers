@@ -19,7 +19,7 @@
 #
 # Author:
 #   ryoe
-nbApiUrl      = 'http://www.nerdbeers.com/api/'
+nbApiUrl      = 'https://www.nerdbeers.com/api/'
 nbApiToken    = process.env.NB_API_TOKEN || null
 slackApiUrl   = 'https://slack.com/api/'
 slackApiToken = process.env.NB_SLACK_API_TOKEN || null
