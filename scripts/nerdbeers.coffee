@@ -23,8 +23,8 @@
 moment = require 'moment'
 qs = require 'querystring'
 
-baseUrl = 'http://www.nerdbeers.com/'
-apiUrl  = 'http://www.nerdbeers.com/api'
+baseUrl = 'https://www.nerdbeers.com/'
+apiUrl  = 'https://www.nerdbeers.com/api'
 help = [
   'hubot nerdbeers - get the current OKC NerdBeers agenda'
   'hubot okc nerdbeers - get the current OKC NerdBeers agenda'
